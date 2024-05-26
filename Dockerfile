@@ -16,8 +16,10 @@ RUN apt-get update -qq && apt-get install -y \
     imagemagick \
     postgresql-client \
     --no-install-recommends && \
-    npm install -g yarn && \
     rm -rf /var/lib/apt/lists/*
+
+# Instalar Yarn
+RUN npm install -g yarn
 
 # Configurar el directorio de trabajo en el contenedor
 WORKDIR /app
@@ -25,9 +27,14 @@ WORKDIR /app
 # Copiar el Gemfile y Gemfile.lock
 COPY Gemfile Gemfile.lock /app/
 
-# Instalar Bundler y dependencias de Ruby
-RUN gem install bundler -v "$(tail -n1 Gemfile.lock | tr -d ' ')" && \
-    bundle install --jobs 20 --retry 5
+# Instalar dependencias de Ruby
+RUN bundle install --jobs 20 --retry 5
+
+# Ensure the log directory and files exist
+RUN mkdir -p /app/log && touch /app/log/development.log && touch /app/log/production.log
+
+# Set Rails environment to production
+ENV RAILS_ENV=production
 
 # Copiar el resto de los archivos del proyecto al directorio de trabajo
 COPY . /app
