@@ -1,6 +1,10 @@
 # Utiliza una imagen base oficial de Ruby con la versión que coincide con tu Gemfile
 FROM ruby:3.2.2-slim as base
 
+# Set Rails environment to production
+ENV RAILS_ENV=production
+ENV SECRET_KEY_BASE=4k*e&G3WkNYajv6Fp@to2zNn7WJ8sLXEi@vBuRfuVqE77TCx$Ru$AvUB#$wjedCWsPx8sb8Zwrz^oUVAynhaoPRFm7Fo#5iHrPJLncTHzp5yQUS5XXV$QGR%!yo!*!LF
+
 # Instalar dependencias necesarias para la aplicación y la compilación de gemas nativas
 RUN apt-get update -qq && apt-get install -y \
     build-essential \
