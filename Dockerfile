@@ -1,9 +1,6 @@
 # Utiliza una imagen base oficial de Ruby con la versión que coincide con tu Gemfile
 FROM ruby:3.2.2-slim as base
 
-# Set environment variables for Node.js
-ENV NODE_OPTIONS=--openssl-legacy-provider
-
 # Instalar dependencias necesarias para la aplicación y la compilación de gemas nativas
 RUN apt-get update -qq && apt-get install -y \
     build-essential \
@@ -40,7 +37,7 @@ COPY . /app
 
 # Instalar dependencias de JavaScript y compilar los activos
 RUN yarn install && \
-    yarn run webpack && \
+    yarn run webpack --mode production && \
     bundle exec rake assets:precompile --trace
 
 # Definir el script de entrada y el comando por defecto
