@@ -29,8 +29,13 @@ WORKDIR /app
 # Copiar el Gemfile y Gemfile.lock
 COPY Gemfile Gemfile.lock /app/
 
-# Instalar dependencias de Ruby
-RUN bundle install --jobs 20 --retry 5
+# Instalar dependencias de Ruby y JS
+RUN bundle install --jobs 20 --retry 5 && \
+    yarn install
+
+# Compile assets and run webpack with the custom configuration
+RUN yarn run webpack --config config/webpack/production.js --mode production && \
+bundle exec rake assets:precompile --trace
 
 # Asegurar que el directorio de logs existe
 RUN mkdir -p /app/log && touch /app/log/development.log && touch /app/log/production.log
