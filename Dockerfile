@@ -29,24 +29,21 @@ WORKDIR /app
 # Copiar el Gemfile y Gemfile.lock
 COPY Gemfile Gemfile.lock /app/
 
-# Instalar dependencias de Ruby y JS
-RUN bundle install --jobs 20 --retry 5 && \
-    yarn install
+# Instalar dependencias de Ruby
+RUN bundle install --jobs 20 --retry 5
 
-# Compile assets and run webpack with the custom configuration
+# Instalar dependencias de JavaScript
+RUN yarn install
+
+# Compilar los activos de JavaScript y de Rails
 RUN yarn run webpack --config config/webpack/production.js --mode production && \
-bundle exec rake assets:precompile --trace
+    bundle exec rake assets:precompile --trace
 
 # Asegurar que el directorio de logs existe
 RUN mkdir -p /app/log && touch /app/log/development.log && touch /app/log/production.log
 
 # Copiar el resto de los archivos del proyecto al directorio de trabajo
 COPY . /app
-
-# Instalar dependencias de JavaScript y compilar los activos
-RUN yarn install && \
-    yarn run webpack --mode production && \
-    bundle exec rake assets:precompile --trace
 
 # Definir el script de entrada y el comando por defecto
 ENTRYPOINT ["docker/entrypoints/rails.sh"]
