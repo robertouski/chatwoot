@@ -1,6 +1,9 @@
 # Utiliza una imagen base oficial de Ruby con la versión que coincide con tu Gemfile
 FROM ruby:3.2.2-slim as base
 
+# Set environment variable to allow older OpenSSL algorithms
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 # Instalar dependencias necesarias para la aplicación y la compilación de gemas nativas
 RUN apt-get update -qq && apt-get install -y \
     build-essential \
