@@ -16,26 +16,24 @@ RUN apt-get update -qq && apt-get install -y \
     imagemagick \
     postgresql-client \
     --no-install-recommends && \
+    npm install -g yarn && \
     rm -rf /var/lib/apt/lists/*
-
-# Instalar Yarn
-RUN npm install -g yarn
 
 # Configurar el directorio de trabajo en el contenedor
 WORKDIR /app
 
 # Copiar el Gemfile y Gemfile.lock
-COPY Gemfile /app/Gemfile
-COPY Gemfile.lock /app/Gemfile.lock
+COPY Gemfile Gemfile.lock /app/
 
-# Instalar dependencias de Ruby
-RUN bundle install --jobs 20 --retry 5
+# Instalar Bundler y dependencias de Ruby
+RUN gem install bundler -v "$(tail -n1 Gemfile.lock | tr -d ' ')" && \
+    bundle install --jobs 20 --retry 5
 
 # Copiar el resto de los archivos del proyecto al directorio de trabajo
 COPY . /app
 
-# Precompilar activos de Rails para producción
-RUN bundle exec rake assets:precompile
+# Precompilar activos de Rails para producción con trace para diagnóstico
+RUN bundle exec rake assets:precompile --trace
 
 # Definir el script de entrada y el comando por defecto
 ENTRYPOINT ["docker/entrypoints/rails.sh"]
