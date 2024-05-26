@@ -1,7 +1,10 @@
 # Utiliza una imagen base oficial de Ruby con la versión que coincide con tu Gemfile
 FROM ruby:3.2.2-slim as base
 
-# Instalar dependencias necesarias para la aplicación, la compilación de gemas nativas, y git
+# Set environment variables for Node.js
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
+# Instalar dependencias necesarias para la aplicación y la compilación de gemas nativas
 RUN apt-get update -qq && apt-get install -y \
     build-essential \
     libpq-dev \
@@ -13,7 +16,6 @@ RUN apt-get update -qq && apt-get install -y \
     imagemagick \
     postgresql-client \
     git \
-    # Agregando Git para la instalación de gemas desde repositorios Git
     --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 # Instalación de Node.js y Yarn a la versión específica requerida
