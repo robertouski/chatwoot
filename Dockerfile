@@ -26,14 +26,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 # Configurar el directorio de trabajo en el contenedor
 WORKDIR /app
 
-# Copiar el Gemfile y Gemfile.lock
-COPY Gemfile Gemfile.lock /app/
+# Copiar el Gemfile, Gemfile.lock y package.json (y otros archivos relevantes)
+COPY Gemfile Gemfile.lock package.json yarn.lock /app/
 
-# Instalar dependencias de Ruby
-RUN bundle install --jobs 20 --retry 5
-
-# Instalar dependencias de JavaScript
-RUN yarn install
+# Instalar dependencias de Ruby y JS
+RUN bundle install --jobs 20 --retry 5 && \
+    yarn install
 
 # Compilar los activos de JavaScript y de Rails
 RUN yarn run webpack --config config/webpack/production.js --mode production && \
